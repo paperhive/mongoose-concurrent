@@ -1,0 +1,47 @@
+{
+  "name": "mongoose-concurrent",
+  "version": "0.0.0",
+  "description": "Mongoose plugin for handling concurrent saves and updates of documents",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "npm run jshint && npm run jscs && mocha",
+    "jshint": "jshint **/*.js",
+    "jscs": "jscs **/*.js",
+    "coveralls": "mocha --require blanket -R mocha-lcov-reporter | coveralls"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paperhive/mongoose-concurrent.git"
+  },
+  "keywords": [
+    "mongoose",
+    "concurrent",
+    "save",
+    "update",
+    "edit",
+    "delete",
+    "conflict"
+  ],
+  "author": "André Gaul <andre@gaul.io>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/paperhive/mongoose-concurrent/issues"
+  },
+  "homepage": "https://github.com/paperhive/mongoose-concurrent",
+  "devDependencies": {
+    "async": "^1.0.0",
+    "blanket": "^1.1.7",
+    "coveralls": "^2.11.2",
+    "mocha": "^2.2.5",
+    "mocha-lcov-reporter": "0.0.2",
+    "mongoose": "^4.0.3",
+    "mongoose-erase": "^2.0.0",
+    "should": "^6.0.3"
+  },
+  "config": {
+    "blanket": {
+      "data-cover-only": "src",
+      "data-cover-never": "node_modules"
+    }
+  }
+}
