@@ -32,6 +32,8 @@
     "async": "^1.0.0",
     "blanket": "^1.1.7",
     "coveralls": "^2.11.2",
+    "jscs": "^1.13.1",
+    "jshint": "^2.7.0",
     "mocha": "^2.2.5",
     "mocha-lcov-reporter": "0.0.2",
     "mongoose": "^4.0.3",
