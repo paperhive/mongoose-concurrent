@@ -4,7 +4,8 @@
   "description": "Mongoose plugin for handling concurrent saves and updates of documents",
   "main": "src/index.js",
   "scripts": {
-    "test": "npm run jshint && npm run jscs && mocha",
+    "test": "npm run jshint && npm run jscs && npm run mocha",
+    "mocha": "mocha",
     "jshint": "jshint **/*.js",
     "jscs": "jscs **/*.js",
     "coveralls": "mocha --require blanket -R mocha-lcov-reporter | coveralls"
@@ -45,5 +46,8 @@
       "data-cover-only": "src",
       "data-cover-never": "node_modules"
     }
+  },
+  "dependencies": {
+    "lodash": "^3.9.1"
   }
 }
