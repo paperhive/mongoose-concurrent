@@ -1,6 +1,6 @@
 {
   "name": "mongoose-concurrent",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Mongoose plugin for handling concurrent saves and updates of documents",
   "main": "src/index.js",
   "scripts": {
