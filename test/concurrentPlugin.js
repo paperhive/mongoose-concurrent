@@ -1,3 +1,4 @@
+/*jshint expr: true*/
 'use strict';
 
 var mongoose = require('mongoose');
@@ -31,22 +32,59 @@ describe('concurrentPlugin()', function() {
     });
   });
 
-  it('should allow saving if revision matches', function(done) {
-    var User = registerUserSchema();
+  describe('concurrentUpdate()', function() {
 
-    async.waterfall([
-      function(cb) {
-        User.create({name: 'Darth', age: 42}, cb);
-      },
-      function(darth, cb) {
-        darth.name = 'Darth Vader';
-        darth.concurrentUpdate(darth._revision, cb);
-      }
-    ], function(err, darth) {
-      if (err) {return done(err);}
-      darth.should.have.property('_revision').which.is.exactly(1);
-      done();
+    it('should allow saving if revision matches', function(done) {
+      var User = registerUserSchema();
+
+      async.waterfall([
+        function(cb) {
+          User.create({name: 'Darth', age: 42}, cb);
+        },
+        function(darth, cb) {
+          darth.name = 'Darth Vader';
+          darth.concurrentUpdate(darth._revision, cb);
+        },
+        function(darth, cb) {
+          darth.should.have.properties({
+            _revision: 1,
+            name: 'Darth Vader',
+            age: 42
+          });
+          cb();
+        }
+      ], done);
     });
+
+    it('should deny saving if revision does not match', function(done) {
+      var User = registerUserSchema();
+      var darthOrig;
+
+      async.waterfall([
+        function(cb) {
+          User.create({name: 'Darth', age: 42}, cb);
+        },
+        function(darth, cb) {
+          darthOrig = darth;
+          darth.name = 'Darth Vader';
+          darth.concurrentUpdate(darth._revision - 1, cb);
+        }
+      ], function(err, darth) {
+        should(err).be.Error;
+        should.not.exist(darth);
+        // check if document is unchanged in db
+        User.findById(darthOrig._id, function(err, darth) {
+          should.not.exist(err);
+          darth.should.have.properties({
+            _revision: 0,
+            name: 'Darth',
+            age: 42
+          });
+          done();
+        });
+      });
+    });
+
   });
 
 });
