@@ -17,7 +17,7 @@ describe('concurrentPlugin()', function() {
   function registerUserSchema(options) {
     var userSchema = new mongoose.Schema({
       name: String,
-      age: Number
+      age: {type: Number, min: 0}
     });
     // register concurrentPlugin
     userSchema.plugin(concurrentPlugin, options);
@@ -68,6 +68,35 @@ describe('concurrentPlugin()', function() {
           darthOrig = darth;
           darth.name = 'Darth Vader';
           darth.concurrentUpdate(darth._revision - 1, cb);
+        }
+      ], function(err, darth) {
+        should(err).be.Error;
+        should.not.exist(darth);
+        // check if document is unchanged in db
+        User.findById(darthOrig._id, function(err, darth) {
+          should.not.exist(err);
+          darth.should.have.properties({
+            _revision: 0,
+            name: 'Darth',
+            age: 42
+          });
+          done();
+        });
+      });
+    });
+
+    it('should run validators', function(done) {
+      var User = registerUserSchema();
+      var darthOrig;
+
+      async.waterfall([
+        function(cb) {
+          User.create({name: 'Darth', age: 42}, cb);
+        },
+        function(darth, cb) {
+          darthOrig = darth;
+          darth.age = -1;
+          darth.concurrentUpdate(darth._revision, cb);
         }
       ], function(err, darth) {
         should(err).be.Error;
