@@ -114,6 +114,59 @@ describe('concurrentPlugin()', function() {
       });
     });
 
-  });
+  }); // concurrentUpdate()
+
+  describe('concurrentRemove()', function() {
+
+    it('should allow removing if revision matches', function(done) {
+      var User = registerUserSchema();
+
+      async.waterfall([
+        function(cb) {
+          User.create({name: 'Darth', age: 42}, cb);
+        },
+        function(darth, cb) {
+          darth.concurrentRemove(darth._revision, cb);
+        },
+        function(darth, cb) {
+          darth.should.have.properties({
+            _revision: 0,
+            name: 'Darth',
+            age: 42
+          });
+          cb();
+        }
+      ], done);
+    });
+
+    it('should deny removing if revision does not match', function(done) {
+      var User = registerUserSchema();
+      var darthOrig;
+
+      async.waterfall([
+        function(cb) {
+          User.create({name: 'Darth', age: 42}, cb);
+        },
+        function(darth, cb) {
+          darthOrig = darth;
+          darth.concurrentRemove(darth._revision - 1, cb);
+        }
+      ], function(err, darth) {
+        should(err).be.Error;
+        should.not.exist(darth);
+        // check if document is unchanged in db
+        User.findById(darthOrig._id, function(err, darth) {
+          should.not.exist(err);
+          darth.should.have.properties({
+            _revision: 0,
+            name: 'Darth',
+            age: 42
+          });
+          done();
+        });
+      });
+    });
+
+  }); // concurrentRemove()
 
 });
